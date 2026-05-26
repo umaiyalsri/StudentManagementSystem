@@ -2,8 +2,10 @@ package com.student.studentmanagement.controller;
 
 import com.student.studentmanagement.model.Student;
 import com.student.studentmanagement.service.StudentService;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -17,6 +19,11 @@ public class StudentController {
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
     }
 
     @GetMapping
