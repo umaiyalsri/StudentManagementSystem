@@ -17,8 +17,14 @@ public class StudentController {
     }
 
     @GetMapping
-    public String listStudents(Model model) {
-        model.addAttribute("students", studentService.getAllStudents());
+    public String listStudents(@RequestParam(required = false) String query, Model model) {
+        if (query != null && !query.isBlank()) {
+            model.addAttribute("students", studentService.searchStudents(query));
+            model.addAttribute("query", query);
+        } else {
+            model.addAttribute("students", studentService.getAllStudents());
+            model.addAttribute("query", "");
+        }
         return "students/list";
     }
 

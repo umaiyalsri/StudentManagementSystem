@@ -14,6 +14,18 @@
         a.button.danger { background-color: #d9534f; }
         a.button.small { padding: 5px 10px; font-size: 13px; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; }
+        .search-bar { display: flex; gap: 8px; margin-top: 20px; }
+        .search-bar input[type="text"] {
+            padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;
+            font-size: 14px; width: 300px;
+        }
+        .search-bar button {
+            padding: 8px 16px; background-color: #4a90d9; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+        }
+        .search-bar button:hover { background-color: #357ab8; }
+        .search-bar a { padding: 8px 14px; background-color: #aaa; color: white;
+            text-decoration: none; border-radius: 4px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -21,6 +33,12 @@
         <h1>Students</h1>
         <a class="button" th:href="@{/students/new}">+ Add Student</a>
     </div>
+
+    <form class="search-bar" th:action="@{/students}" method="get">
+        <input type="text" name="query" placeholder="Search by name or course..." th:value="${query}" />
+        <button type="submit">Search</button>
+        <a th:href="@{/students}" th:if="${query != null and !#strings.isEmpty(query)}">Clear</a>
+    </form>
 
     <table>
         <thead>
@@ -35,7 +53,11 @@
         </thead>
         <tbody>
             <tr th:if="${#lists.isEmpty(students)}">
-                <td colspan="6" style="text-align:center; color:#888;">No students found. Add one to get started.</td>
+                <td colspan="6" style="text-align:center; color:#888;">
+                    No students found.
+                    <span th:if="${query != null and !#strings.isEmpty(query)}">Try a different search term.</span>
+                    <span th:if="${query == null or #strings.isEmpty(query)}">Add one to get started.</span>
+                </td>
             </tr>
             <tr th:each="student : ${students}">
                 <td th:text="${student.id}"></td>

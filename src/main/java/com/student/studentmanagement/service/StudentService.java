@@ -19,6 +19,12 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    public List<Student> searchStudents(String query) {
+        return studentRepository
+                .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrCourseContainingIgnoreCase(
+                        query, query, query);
+    }
+
     public Student getStudentById(Long id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
