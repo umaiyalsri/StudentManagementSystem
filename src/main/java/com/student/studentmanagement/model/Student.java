@@ -58,11 +58,4 @@ public class Student {
         return "Fail";
     }
 
-    public String getGradeBadgeColor() {
-        if (marks == null) return "secondary";
-        if (marks >= 80) return "success";
-        if (marks >= 60) return "warning";
-        if (marks >= 50) return "orange";
-        return "danger";
-    }
 }
