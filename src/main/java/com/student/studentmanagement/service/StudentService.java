@@ -19,10 +19,12 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    public long countStudents() {
+        return studentRepository.count();
+    }
+
     public List<Student> searchStudents(String query) {
-        return studentRepository
-                .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrCourseContainingIgnoreCase(
-                        query, query, query);
+        return studentRepository.search(query);
     }
 
     public Student getStudentById(Long id) {

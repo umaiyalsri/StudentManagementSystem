@@ -2,76 +2,246 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Student Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        h1 { color: #333; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px 14px; text-align: left; }
-        th { background-color: #4a90d9; color: white; }
-        tr:nth-child(even) { background-color: #f4f4f4; }
-        a.button { padding: 8px 16px; background-color: #4a90d9; color: white; text-decoration: none; border-radius: 4px; }
-        a.button.danger { background-color: #d9534f; }
-        a.button.small { padding: 5px 10px; font-size: 13px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; }
-        .search-bar { display: flex; gap: 8px; margin-top: 20px; }
-        .search-bar input[type="text"] {
-            padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;
-            font-size: 14px; width: 300px;
+        body { background-color: #f0f4f8; }
+
+        .navbar-brand { font-weight: 700; font-size: 1.3rem; letter-spacing: 0.5px; }
+
+        .stat-card {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
         }
-        .search-bar button {
-            padding: 8px 16px; background-color: #4a90d9; color: white;
-            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+
+        .table-card {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            overflow: hidden;
         }
-        .search-bar button:hover { background-color: #357ab8; }
-        .search-bar a { padding: 8px 14px; background-color: #aaa; color: white;
-            text-decoration: none; border-radius: 4px; font-size: 14px; }
+
+        .table thead th {
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 600;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .table tbody tr:hover { background-color: #f1f0ff; }
+        .table td { vertical-align: middle; }
+
+        .badge-grade {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+            color: white;
+            font-size: 0.8rem;
+        }
+        .btn-edit:hover { background-color: #4338ca; border-color: #4338ca; color: white; }
+
+        .btn-delete {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: white;
+            font-size: 0.8rem;
+        }
+        .btn-delete:hover { background-color: #dc2626; border-color: #dc2626; color: white; }
+
+        .search-input { border-radius: 10px 0 0 10px; border-right: none; }
+        .search-btn { border-radius: 0 10px 10px 0; background-color: #4f46e5; border-color: #4f46e5; }
+        .search-btn:hover { background-color: #4338ca; border-color: #4338ca; }
+
+        .empty-state { padding: 60px 20px; }
+        .empty-state i { font-size: 3.5rem; color: #cbd5e1; }
+
+        .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .student-name { display: flex; align-items: center; }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <h1>Students</h1>
-        <a class="button" th:href="@{/students/new}">+ Add Student</a>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4f46e5;">
+    <div class="container-fluid px-4">
+        <span class="navbar-brand">
+            <i class="bi bi-mortarboard-fill me-2"></i>Student Management
+        </span>
+        <a href="/students/new" class="btn btn-light btn-sm fw-semibold ms-auto">
+            <i class="bi bi-plus-lg me-1"></i>Add Student
+        </a>
+    </div>
+</nav>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Flash Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <form class="search-bar" th:action="@{/students}" method="get">
-        <input type="text" name="query" placeholder="Search by name or course..." th:value="${query}" />
-        <button type="submit">Search</button>
-        <a th:href="@{/students}" th:if="${query != null and !#strings.isEmpty(query)}">Clear</a>
-    </form>
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card stat-card p-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-3 p-2 me-3" style="background:#ede9fe;">
+                        <i class="bi bi-people-fill fs-4" style="color:#4f46e5;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Total Students</div>
+                        <div class="fw-bold fs-4" th:text="${totalCount}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card p-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-3 p-2 me-3" style="background:#dcfce7;">
+                        <i class="bi bi-graph-up-arrow fs-4" style="color:#16a34a;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Results Shown</div>
+                        <div class="fw-bold fs-4" th:text="${#lists.size(students)}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Course</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:if="${#lists.isEmpty(students)}">
-                <td colspan="6" style="text-align:center; color:#888;">
-                    No students found.
-                    <span th:if="${query != null and !#strings.isEmpty(query)}">Try a different search term.</span>
-                    <span th:if="${query == null or #strings.isEmpty(query)}">Add one to get started.</span>
-                </td>
-            </tr>
-            <tr th:each="student : ${students}">
-                <td th:text="${student.id}"></td>
-                <td th:text="${student.firstName}"></td>
-                <td th:text="${student.lastName}"></td>
-                <td th:text="${student.email}"></td>
-                <td th:text="${student.course}"></td>
-                <td>
-                    <a class="button small" th:href="@{/students/edit/{id}(id=${student.id})}">Edit</a>
-                    <a class="button small danger" th:href="@{/students/delete/{id}(id=${student.id})}"
-                       onclick="return confirm('Delete this student?')">Delete</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Search + Table Card -->
+    <div class="card table-card">
+        <div class="card-header bg-white py-3 px-4 border-bottom">
+            <div class="row align-items-center g-2">
+                <div class="col-12 col-md-5">
+                    <h6 class="mb-0 fw-bold text-dark">
+                        <i class="bi bi-table me-2 text-indigo"></i>All Students
+                    </h6>
+                </div>
+                <div class="col-12 col-md-7">
+                    <form th:action="@{/students}" method="get">
+                        <div class="input-group">
+                            <input type="text" name="query" class="form-control search-input"
+                                   placeholder="Search by name or department..."
+                                   th:value="${query}" />
+                            <button class="btn search-btn text-white" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <a th:if="${query != null and !#strings.isEmpty(query)}"
+                               th:href="@{/students}"
+                               class="btn btn-outline-secondary ms-2 rounded-3">
+                                <i class="bi bi-x-lg"></i> Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(students)}" class="empty-state text-center">
+                <i class="bi bi-inbox d-block mb-3"></i>
+                <h6 class="text-muted fw-semibold">No students found</h6>
+                <p class="text-muted small mb-3"
+                   th:text="${query != null and !#strings.isEmpty(query)} ? 'No results for your search. Try a different term.' : 'Get started by adding your first student.'">
+                </p>
+                <a th:if="${query == null or #strings.isEmpty(query)}"
+                   href="/students/new" class="btn btn-sm"
+                   style="background:#4f46e5; color:white;">
+                    <i class="bi bi-plus-lg me-1"></i>Add First Student
+                </a>
+            </div>
+
+            <!-- Table -->
+            <div th:if="${!#lists.isEmpty(students)}" class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Student</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Marks</th>
+                            <th>Grade</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="student, stat : ${students}">
+                            <td class="ps-4 text-muted small" th:text="${stat.count}"></td>
+                            <td>
+                                <div class="student-name">
+                                    <div class="avatar"
+                                         th:text="${#strings.toUpperCase(#strings.substring(student.firstName,0,1))}"></div>
+                                    <div>
+                                        <div class="fw-semibold"
+                                             th:text="${student.firstName + ' ' + student.lastName}"></div>
+                                        <div class="text-muted small" th:text="'ID: ' + ${student.id}"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td th:text="${student.email}" class="text-muted small"></td>
+                            <td>
+                                <span class="badge rounded-pill bg-light text-dark border"
+                                      th:text="${student.department}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${student.marks != null}"
+                                      class="fw-semibold" th:text="${student.marks + '/100'}"></span>
+                                <span th:if="${student.marks == null}" class="text-muted small">—</span>
+                            </td>
+                            <td>
+                                <span th:if="${student.marks != null}"
+                                      th:classappend="${student.marks >= 80} ? 'bg-success' : (${student.marks >= 60} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      class="badge badge-grade"
+                                      th:text="${student.grade + ' · ' + student.gradeLabel}"></span>
+                                <span th:if="${student.marks == null}"
+                                      class="badge badge-grade bg-secondary">No Marks</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/students/edit/{id}(id=${student.id})}"
+                                   class="btn btn-edit btn-sm me-1">
+                                    <i class="bi bi-pencil-fill me-1"></i>Edit
+                                </a>
+                                <a th:href="@{/students/delete/{id}(id=${student.id})}"
+                                   class="btn btn-delete btn-sm"
+                                   th:onclick="'return confirm(\'Delete ' + ${student.firstName} + ' ' + ${student.lastName} + '?\');'">
+                                    <i class="bi bi-trash-fill me-1"></i>Delete
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

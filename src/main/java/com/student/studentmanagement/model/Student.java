@@ -15,16 +15,10 @@ public class Student {
     private String firstName;
     private String lastName;
     private String email;
-    private String course;
+    private String department;
+    private Integer marks;
 
     public Student() {}
-
-    public Student(String firstName, String lastName, String email, String course) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.course = course;
-    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -38,6 +32,37 @@ public class Student {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getCourse() { return course; }
-    public void setCourse(String course) { this.course = course; }
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
+
+    public Integer getMarks() { return marks; }
+    public void setMarks(Integer marks) { this.marks = marks; }
+
+    public String getGrade() {
+        if (marks == null) return "N/A";
+        if (marks >= 90) return "A+";
+        if (marks >= 80) return "A";
+        if (marks >= 70) return "B";
+        if (marks >= 60) return "C";
+        if (marks >= 50) return "D";
+        return "F";
+    }
+
+    public String getGradeLabel() {
+        if (marks == null) return "No Marks";
+        if (marks >= 90) return "Excellent";
+        if (marks >= 80) return "Very Good";
+        if (marks >= 70) return "Good";
+        if (marks >= 60) return "Average";
+        if (marks >= 50) return "Below Average";
+        return "Fail";
+    }
+
+    public String getGradeBadgeColor() {
+        if (marks == null) return "secondary";
+        if (marks >= 80) return "success";
+        if (marks >= 60) return "warning";
+        if (marks >= 50) return "orange";
+        return "danger";
+    }
 }
